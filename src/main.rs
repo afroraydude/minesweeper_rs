@@ -139,7 +139,7 @@ impl eframe::App for Minesweeper {
                     let b3 = ui.add(egui::Button::new("Hard"));
 
                     if b1.clicked() {
-                        self.new_board(10, 10, 10);
+                        self.new_board(10, 10, 5);
                     }
 
                     if b2.clicked() {
