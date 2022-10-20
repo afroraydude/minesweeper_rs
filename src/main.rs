@@ -6,6 +6,7 @@ use egui::Vec2;
 use objs::Board;
 
 mod objs;
+mod texturedb;
 
 struct CustomBoard {
     pub width: usize,
@@ -30,6 +31,8 @@ struct Minesweeper {
     game_started: bool,
     pub custom_board: CustomBoard,
     window_size: Vec2,
+    pub texture_db: texturedb::TextureDatabase,
+    initial_load: bool,
 }
 
 impl Minesweeper {
@@ -62,6 +65,7 @@ impl Minesweeper {
 
 impl Default for Minesweeper {
     fn default() -> Self {
+        let mut texture = texturedb::TextureDatabase::default();
         Self {
             board: Board::new(10, 10, 10),
             is_game_over: false,
@@ -69,15 +73,39 @@ impl Default for Minesweeper {
             game_started: false,
             custom_board: CustomBoard::default(),
             window_size: Vec2::new(300.0, 300.0),
+            texture_db: texture,
+            initial_load: false,
         }
     }
 }
 
+fn num_to_word(num: u8) -> String {
+    // do it lowercase
+    let output = match num {
+        0 => "zero",
+        1 => "one",
+        2 => "two",
+        3 => "three",
+        4 => "four",
+        5 => "five",
+        6 => "six",
+        7 => "seven",
+        8 => "eight",
+        _ => "zero",
+    };
+    output.to_string()
+}
+
 impl eframe::App for Minesweeper {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+
         frame.set_window_size(self.get_window_size());
         if self.game_started == true {
             egui::CentralPanel::default().show(ctx, |ui| {
+                if !self.initial_load {
+                    self.initial_load = true;
+                    self.texture_db.update_all(ui);
+                }
                 ui.heading("Minesweeper");
 
                 if self.is_game_over {
@@ -104,25 +132,23 @@ impl eframe::App for Minesweeper {
                 for y in 0..self.board.get_height() as usize {
                     ui.horizontal(|ui| {
                         for x in 0..self.board.get_width() as usize {
+                            //ui.add(egui::ImageButton::new(self.texture_db.get_texture("base"), Vec2::new(16.0, 16.0)));
                             let tile = self.board.get_tile(x, y);
-                            let label: String;
+                            let mut image = self.texture_db.get_texture("base");
                             if tile.is_revealed {
                                 if tile.is_mine {
                                     // bomb emoji
-                                    label = "💣".to_string();
+                                    image = self.texture_db.get_texture("mine");
                                 } else {
-                                    label = format!(" {} ", tile.adjacent_mines);
+                                    image = self.texture_db.get_texture(num_to_word(tile.adjacent_mines).as_str());
                                 }
                             } else if tile.is_flagged {
                                 // flag emoji
-                                label = "🚩".to_string();
-                            } else {
-                                // blank emoji
-                                label = "⬜".to_string();
+                                image = self.texture_db.get_texture("flag");
                             }
 
                             let button =
-                                ui.add_enabled(!self.is_game_over, egui::Button::new(label));
+                                ui.add_enabled(!self.is_game_over, egui::ImageButton::new(image, Vec2::new(16.0, 16.0)));
 
                             if button.clicked() {
                                 self.is_game_over = self.board.select_tile(x, y);
@@ -140,13 +166,25 @@ impl eframe::App for Minesweeper {
                     });
                 }
             });
-        } else {
+        }
+        else {
+
+
             let mut width = self.custom_board.width.to_string();
             let mut height = self.custom_board.height.to_string();
             let mut mines = self.custom_board.mines.to_string();
             
             egui::CentralPanel::default().show(ctx, |ui| {
+                if !self.initial_load {
+                    self.initial_load = true;
+                    self.texture_db.update_all(ui);
+                }
+
                 ui.heading("Minesweeper");
+
+                // test button
+                //ui.add(egui::ImageButton::new(self.texture_db.get_texture("base"), Vec2::new(16.0, 16.0)));
+
                 ui.label("Welcome to Minesweeper!");
                 ui.label("Select a difficulty to begin.");
                 ui.horizontal(|ui| {
@@ -155,18 +193,19 @@ impl eframe::App for Minesweeper {
                     let b3 = ui.add(egui::Button::new("Hard"));
 
                     if b1.clicked() {
+                        self.update_window_size(Vec2::new(330.0, 360.0));
                         self.new_board(10, 10, 5);
                     }
 
                     if b2.clicked() {
                         // increase the window size to fit the board
-                        self.update_window_size(Vec2::new(450.0, 450.0));
+                        self.update_window_size(Vec2::new(495.0, 495.0));
                         self.new_board(15, 15, 30);
                     }
 
                     if b3.clicked() {
                         // increase the window size to fit the board
-                        self.update_window_size(Vec2 { x: 750.0, y: 750.0 });
+                        self.update_window_size(Vec2 { x: 825.0, y: 825.0 });
                         self.new_board(25, 25, 50);
                     }
                 });
@@ -186,7 +225,7 @@ impl eframe::App for Minesweeper {
                     }
 
                     if ui.button("Start Custom Game").clicked() {
-                        let custom_window_size = Vec2::new((self.custom_board.width * 30) as f32, (self.custom_board.height * 30) as f32);
+                        let custom_window_size = Vec2::new((self.custom_board.width * 33) as f32, (self.custom_board.height * 33) as f32);
                         self.update_window_size(custom_window_size);
                         // TODO: validate input
                         self.new_board(
