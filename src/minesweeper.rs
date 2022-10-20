@@ -261,7 +261,7 @@ impl eframe::App for Minesweeper {
                   }
 
                   if ui.button("Start Custom Game").clicked() {
-                      let custom_window_size = Vec2::new((self.custom_board.width * 33) as f32, (self.custom_board.height * 33) as f32);
+                      let custom_window_size = Vec2::new((self.custom_board.width * 37) as f32, (self.custom_board.height * 37) as f32);
                       self.update_window_size(custom_window_size);
                       
                       if validate_input(self.custom_board.width, self.custom_board.height, self.custom_board.mines) {
