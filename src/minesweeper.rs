@@ -134,6 +134,7 @@ impl eframe::App for Minesweeper {
 
               if self.is_game_over {
                   ui.label("Game Over!");
+                  ui.label("Score: ".to_string() + &self.board.score.to_string());
                   if ui.button("New Game").clicked() {
                       self.prompt_for_new_game();
                   }
@@ -261,7 +262,7 @@ impl eframe::App for Minesweeper {
                   }
 
                   if ui.button("Start Custom Game").clicked() {
-                      let custom_window_size = Vec2::new((self.custom_board.width * 37) as f32, (self.custom_board.height * 37) as f32);
+                      let custom_window_size = Vec2::new((self.custom_board.width * 37) as f32, ((self.custom_board.height * 37) + 30) as f32);
                       self.update_window_size(custom_window_size);
                       
                       if validate_input(self.custom_board.width, self.custom_board.height, self.custom_board.mines) {

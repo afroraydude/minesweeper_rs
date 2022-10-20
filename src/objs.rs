@@ -11,6 +11,7 @@ pub struct Board {
   height: u8,
   mines: u8,
   flags: u8,
+  pub score: u8,
 }
 
 impl Board {
@@ -35,6 +36,7 @@ impl Board {
           height: height as u8,
           mines: mines as u8,
           flags: 0,
+          score: 0
       };
 
       board.place_mines();
@@ -125,6 +127,10 @@ impl Board {
   }
 
   pub fn flag_tile(&mut self, x: usize, y: usize) {
+      if self.flags == self.mines {
+          return;
+      }
+
       let tile = &mut self.tiles[y][x];
       if tile.is_revealed {
         println!("Tile is already revealed");
@@ -157,6 +163,9 @@ impl Board {
               let tile = &mut self.tiles[y as usize][x as usize];
               if tile.is_mine {
                   tile.is_revealed = true;
+                  if (tile.is_flagged) {
+                    self.score += 1;
+                  }
               }
           }
       }
