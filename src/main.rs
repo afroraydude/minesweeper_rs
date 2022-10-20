@@ -2,6 +2,7 @@
 
 use eframe::egui;
 use eframe::run_native;
+use egui::Vec2;
 use egui::text;
 use objs::Board;
 
@@ -29,6 +30,7 @@ struct Minesweeper {
     is_game_won: bool,
     game_started: bool,
     pub custom_board: custom_board,
+    window_size: Vec2,
 }
 
 impl Minesweeper {
@@ -41,12 +43,21 @@ impl Minesweeper {
 
     pub fn prompt_for_new_game(&mut self) {
         self.game_started = false;
+        self.window_size = Vec2::new(300.0, 300.0);
     }
 
     pub fn update_custom_board(&mut self, width: usize, height: usize, mines: usize) {
         self.custom_board.width = width;
         self.custom_board.height = height;
         self.custom_board.mines = mines;
+    }
+
+    pub fn update_window_size(&mut self, size: Vec2) {
+        self.window_size = size;
+    }
+
+    pub fn get_window_size(&self) -> Vec2 {
+        self.window_size
     }
 }
 
@@ -58,12 +69,14 @@ impl Default for Minesweeper {
             is_game_won: false,
             game_started: false,
             custom_board: custom_board::default(),
+            window_size: Vec2::new(300.0, 300.0),
         }
     }
 }
 
 impl eframe::App for Minesweeper {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+        frame.set_window_size(self.get_window_size());
         if (self.game_started == true) {
             egui::CentralPanel::default().show(ctx, |ui| {
                 ui.heading("Minesweeper");
@@ -132,6 +145,7 @@ impl eframe::App for Minesweeper {
             let mut width = self.custom_board.width.to_string();
             let mut height = self.custom_board.height.to_string();
             let mut mines = self.custom_board.mines.to_string();
+            
             egui::CentralPanel::default().show(ctx, |ui| {
                 ui.heading("Minesweeper");
                 ui.label("Welcome to Minesweeper!");
@@ -146,10 +160,14 @@ impl eframe::App for Minesweeper {
                     }
 
                     if b2.clicked() {
+                        // increase the window size to fit the board
+                        self.update_window_size(Vec2::new(450.0, 450.0));
                         self.new_board(15, 15, 30);
                     }
 
                     if b3.clicked() {
+                        // increase the window size to fit the board
+                        self.update_window_size(Vec2 { x: 750.0, y: 750.0 });
                         self.new_board(25, 25, 50);
                     }
                 });
@@ -166,15 +184,16 @@ impl eframe::App for Minesweeper {
                         let m = mines.parse::<usize>().unwrap_or(10);
 
                         self.update_custom_board(w, h, m);
-
                     }
 
                     if ui.button("Start Custom Game").clicked() {
+                        let custom_window_size = Vec2::new((self.custom_board.width * 30) as f32, (self.custom_board.height * 30) as f32);
+                        self.update_window_size(custom_window_size);
                         // TODO: validate input
                         self.new_board(
-                            width.parse::<usize>().unwrap(),
-                            height.parse::<usize>().unwrap(),
-                            mines.parse::<usize>().unwrap(),
+                            self.custom_board.width,
+                            self.custom_board.height,
+                            self.custom_board.mines,
                         );
                     }
                 });
@@ -184,7 +203,10 @@ impl eframe::App for Minesweeper {
 }
 
 fn main() {
-    let options = eframe::NativeOptions::default();
+    let mut options = eframe::NativeOptions::default();
+
+    options.initial_window_size = Some(Vec2::new(300.0, 300.0));
+    options.resizable = false;
 
     run_native(
         "Minesweeper",
