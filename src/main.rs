@@ -150,7 +150,7 @@ impl eframe::App for Minesweeper {
                         self.new_board(25, 25, 50);
                     }
                 });
-                ui.label("Custom");
+                ui.label("Or play custom");
                 ui.label("Enter the width, height, and number of mines.");
                 ui.horizontal(|ui| {
                     let w = ui.add_sized([20.0, 20.0], egui::TextEdit::singleline(&mut width).hint_text("Width"));

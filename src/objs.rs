@@ -88,12 +88,16 @@ impl Board {
 
   pub fn select_tile(&mut self, x: usize, y: usize) -> bool {
       let tile = &mut self.tiles[y][x];
+      if tile.is_flagged {
+          return false;
+      }
+
       if tile.is_revealed {
           return false;
       }
 
       tile.is_revealed = true;
-      if (tile.is_mine) {
+      if tile.is_mine {
           return true;
       }
 
