@@ -2,6 +2,7 @@
 
 use eframe::egui;
 use eframe::run_native;
+use egui::Color32;
 use egui::Vec2;
 use objs::Board;
 
@@ -96,6 +97,25 @@ fn num_to_word(num: u8) -> String {
     output.to_string()
 }
 
+fn get_tint(val: String) -> Color32 {
+    // number to color, 0 through 8, make it like a gradient from green to blue
+    match val.as_str() {
+        "zero" => Color32::from_rgb(0, 255, 0),
+        "one" => Color32::from_rgb(0, 186, 45),
+        "two" => Color32::from_rgb(0, 127, 90),
+        "three" => Color32::from_rgb(0, 68, 135),
+        "four" => Color32::from_rgb(0, 9, 180),
+        "five" => Color32::from_rgb(45, 0, 135),
+        "six" => Color32::from_rgb(90, 0, 90),
+        "seven" => Color32::from_rgb(135, 0, 45),
+        "eight" => Color32::from_rgb(180, 0, 0),
+        // flag and mine
+        "flag" => Color32::from_rgb(255, 255, 0),
+        "mine" => Color32::from_rgb(0, 0, 0),
+        _ => Color32::from_rgb(0, 0, 0),
+    }
+}
+
 impl eframe::App for Minesweeper {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
 
@@ -127,6 +147,9 @@ impl eframe::App for Minesweeper {
                     );
 
                     ui.label(info);
+                    if ui.button("New Game").clicked() {
+                        self.prompt_for_new_game();
+                    }
                 }
                 // display the board
                 for y in 0..self.board.get_height() as usize {
@@ -135,20 +158,29 @@ impl eframe::App for Minesweeper {
                             //ui.add(egui::ImageButton::new(self.texture_db.get_texture("base"), Vec2::new(16.0, 16.0)));
                             let tile = self.board.get_tile(x, y);
                             let mut image = self.texture_db.get_texture("base");
+                            let mut tint = Color32::WHITE;
                             if tile.is_revealed {
                                 if tile.is_mine {
                                     // bomb emoji
                                     image = self.texture_db.get_texture("mine");
+                                    tint = get_tint("mine".to_string());
                                 } else {
                                     image = self.texture_db.get_texture(num_to_word(tile.adjacent_mines).as_str());
+                                    tint = get_tint(num_to_word(tile.adjacent_mines));
                                 }
                             } else if tile.is_flagged {
                                 // flag emoji
                                 image = self.texture_db.get_texture("flag");
+                                tint = get_tint("flag".to_string());
                             }
 
                             let button =
-                                ui.add_enabled(!self.is_game_over, egui::ImageButton::new(image, Vec2::new(16.0, 16.0)));
+                                ui.add_enabled(!self.is_game_over, 
+                                    egui::ImageButton::new(
+                                        image, 
+                                        Vec2::new(20.0, 20.0))
+                                        .tint(tint)
+                                    );
 
                             if button.clicked() {
                                 self.is_game_over = self.board.select_tile(x, y);
@@ -193,19 +225,19 @@ impl eframe::App for Minesweeper {
                     let b3 = ui.add(egui::Button::new("Hard"));
 
                     if b1.clicked() {
-                        self.update_window_size(Vec2::new(330.0, 360.0));
+                        self.update_window_size(Vec2::new(370.0, 400.0));
                         self.new_board(10, 10, 5);
                     }
 
                     if b2.clicked() {
                         // increase the window size to fit the board
-                        self.update_window_size(Vec2::new(495.0, 495.0));
+                        self.update_window_size(Vec2::new(555.0, 550.0));
                         self.new_board(15, 15, 30);
                     }
 
                     if b3.clicked() {
                         // increase the window size to fit the board
-                        self.update_window_size(Vec2 { x: 825.0, y: 825.0 });
+                        self.update_window_size(Vec2 { x: 925.0, y: 900.0 });
                         self.new_board(25, 25, 50);
                     }
                 });

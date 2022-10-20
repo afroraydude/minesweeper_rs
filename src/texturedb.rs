@@ -1,19 +1,19 @@
 use egui::{Image, TextBuffer, TextureHandle, Ui};
 
 pub struct TextureDatabase {
-    pub texture: Option<egui::TextureHandle>,
-    pub base: Option<egui::TextureHandle>,
-    pub flag: Option<egui::TextureHandle>,
-    pub mine: Option<egui::TextureHandle>,
-    pub zero: Option<egui::TextureHandle>,
-    pub one: Option<egui::TextureHandle>,
-    pub two: Option<egui::TextureHandle>,
-    pub three: Option<egui::TextureHandle>,
-    pub four: Option<egui::TextureHandle>,
-    pub five: Option<egui::TextureHandle>,
-    pub six: Option<egui::TextureHandle>,
-    pub seven: Option<egui::TextureHandle>,
-    pub eight: Option<egui::TextureHandle>,
+    texture: Option<egui::TextureHandle>,
+    base: Option<egui::TextureHandle>,
+    flag: Option<egui::TextureHandle>,
+    mine: Option<egui::TextureHandle>,
+    zero: Option<egui::TextureHandle>,
+    one: Option<egui::TextureHandle>,
+    two: Option<egui::TextureHandle>,
+    three: Option<egui::TextureHandle>,
+    four: Option<egui::TextureHandle>,
+    five: Option<egui::TextureHandle>,
+    six: Option<egui::TextureHandle>,
+    seven: Option<egui::TextureHandle>,
+    eight: Option<egui::TextureHandle>,
 }
 
 pub struct ImageDatabase {
