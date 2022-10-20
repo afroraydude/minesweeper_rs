@@ -3,18 +3,17 @@
 use eframe::egui;
 use eframe::run_native;
 use egui::Vec2;
-use egui::text;
 use objs::Board;
 
 mod objs;
 
-struct custom_board {
+struct CustomBoard {
     pub width: usize,
     pub height: usize,
     pub mines: usize,
 }
 
-impl Default for custom_board {
+impl Default for CustomBoard {
     fn default() -> Self {
         Self {
             width: 10,
@@ -29,7 +28,7 @@ struct Minesweeper {
     is_game_over: bool,
     is_game_won: bool,
     game_started: bool,
-    pub custom_board: custom_board,
+    pub custom_board: CustomBoard,
     window_size: Vec2,
 }
 
@@ -68,7 +67,7 @@ impl Default for Minesweeper {
             is_game_over: false,
             is_game_won: false,
             game_started: false,
-            custom_board: custom_board::default(),
+            custom_board: CustomBoard::default(),
             window_size: Vec2::new(300.0, 300.0),
         }
     }
@@ -77,7 +76,7 @@ impl Default for Minesweeper {
 impl eframe::App for Minesweeper {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
         frame.set_window_size(self.get_window_size());
-        if (self.game_started == true) {
+        if self.game_started == true {
             egui::CentralPanel::default().show(ctx, |ui| {
                 ui.heading("Minesweeper");
 
@@ -106,7 +105,7 @@ impl eframe::App for Minesweeper {
                     ui.horizontal(|ui| {
                         for x in 0..self.board.get_width() as usize {
                             let tile = self.board.get_tile(x, y);
-                            let mut label = String::new();
+                            let label: String;
                             if tile.is_revealed {
                                 if tile.is_mine {
                                     // bomb emoji
@@ -211,6 +210,6 @@ fn main() {
     run_native(
         "Minesweeper",
         options,
-        Box::new(|ctx| Box::new(Minesweeper::default())),
+        Box::new(|_ctx| Box::new(Minesweeper::default())),
     );
 }
