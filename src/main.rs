@@ -75,6 +75,9 @@ impl eframe::App for Minesweeper {
                     }
                 } else if self.is_game_won {
                     ui.label("You won!");
+                    if ui.button("New Game").clicked() {
+                        self.prompt_for_new_game();
+                    }
                 } else {
                     let info = format!(
                         "Total mines: {} Flags used: {} Mines remaining: {}",
