@@ -10,6 +10,7 @@ pub struct Board {
   width: u8,
   height: u8,
   mines: u8,
+  flags: u8,
 }
 
 impl Board {
@@ -33,6 +34,7 @@ impl Board {
           width: width as u8,
           height: height as u8,
           mines: mines as u8,
+          flags: 0,
       };
 
       board.place_mines();
@@ -126,6 +128,11 @@ impl Board {
       }
 
       tile.is_flagged = !tile.is_flagged;
+      if tile.is_flagged {
+          self.flags += 1;
+      } else {
+          self.flags -= 1;
+      }
   }
 
   pub fn is_win(&self) -> bool {
@@ -151,6 +158,14 @@ impl Board {
       }
 
         self.print_board();
+  }
+
+  pub fn get_mines(&self) -> u8 {
+    self.mines
+  }
+
+  pub fn get_flags(&self) -> u8 {
+    self.flags
   }
 
   pub fn get_height(&self) -> u8 {
