@@ -116,6 +116,18 @@ fn get_tint(val: String) -> Color32 {
     }
 }
 
+fn validate_input(width: usize, height: usize, mines: usize) -> bool {
+    if width < 3 || height < 3 {
+        return false;
+    }
+
+    if mines > (width * height) - 1 {
+        return false;
+    }
+
+    true
+}
+
 impl eframe::App for Minesweeper {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
 
@@ -259,12 +271,10 @@ impl eframe::App for Minesweeper {
                     if ui.button("Start Custom Game").clicked() {
                         let custom_window_size = Vec2::new((self.custom_board.width * 33) as f32, (self.custom_board.height * 33) as f32);
                         self.update_window_size(custom_window_size);
-                        // TODO: validate input
-                        self.new_board(
-                            self.custom_board.width,
-                            self.custom_board.height,
-                            self.custom_board.mines,
-                        );
+                        
+                        if validate_input(self.custom_board.width, self.custom_board.height, self.custom_board.mines) {
+                            self.new_board(self.custom_board.width, self.custom_board.height, self.custom_board.mines);
+                        }
                     }
                 });
             });
