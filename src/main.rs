@@ -14,10 +14,18 @@ struct Minesweeper {
     is_game_won: bool,
 }
 
+impl Minesweeper {
+    pub fn new_board(&mut self, width: usize, height: usize, mines: usize) {
+        self.board = Board::new(width, height, mines);
+        self.is_game_over = false;
+        self.is_game_won = false;
+    }
+}
+
 impl Default for Minesweeper {
     fn default() -> Self {
         Self {
-            board: Board::new(10, 10, 6),
+            board: Board::new(10, 10, 10),
             is_game_over: false,
             is_game_won: false,
         }
