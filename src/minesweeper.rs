@@ -139,7 +139,8 @@ impl eframe::App for Minesweeper {
                       self.prompt_for_new_game();
                   }
               } else if self.is_game_won {
-                  ui.label("You won!");
+                  let elapsed_time = self.board.end_time - self.board.start_time;
+                  ui.label(format!("You won! Score: {}, Time: {}", self.board.score, elapsed_time.as_secs()));
                   if ui.button("New Game").clicked() {
                       self.prompt_for_new_game();
                   }

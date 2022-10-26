@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 pub struct Tile {
   pub is_mine: bool,
   pub is_revealed: bool,
@@ -12,6 +14,8 @@ pub struct Board {
   mines: u8,
   flags: u8,
   pub score: u8,
+  pub start_time: Instant,
+  pub end_time: Instant,
 }
 
 impl Board {
@@ -36,7 +40,9 @@ impl Board {
           height: height as u8,
           mines: mines as u8,
           flags: 0,
-          score: 0
+          score: 0,
+          start_time: Instant::now(),
+          end_time: Instant::now(),
       };
 
       board.place_mines();
@@ -119,10 +125,15 @@ impl Board {
 
                   if self.select_tile(x as usize, y as usize) {
                     println!("Mine found at {}, {}", x, y);
+                    // double points for picking a bonus tile
+                    self.score += 1;
                   }
               }
           }
       }
+
+      self.score += 1;
+
       false
   }
 
@@ -145,7 +156,8 @@ impl Board {
       }
   }
 
-  pub fn is_win(&self) -> bool {
+  pub fn is_win(&mut self) -> bool {
+       self.on_game_end();
       for y in 0..self.height {
           for x in 0..self.width {
               let tile = &self.tiles[y as usize][x as usize];
@@ -157,14 +169,21 @@ impl Board {
       true
   }
 
+  pub fn on_game_end(&mut self) {
+      if (self.end_time - self.start_time).as_secs() == 0 {
+          self.end_time = Instant::now();
+      }
+  }
+
   pub fn on_lost(&mut self) {
+      self.on_game_end();
       for y in 0..self.height {
           for x in 0..self.width {
               let tile = &mut self.tiles[y as usize][x as usize];
               if tile.is_mine {
                   tile.is_revealed = true;
-                  if (tile.is_flagged) {
-                    self.score += 1;
+                  if tile.is_flagged {
+                    self.score += 10;
                   }
               }
           }
