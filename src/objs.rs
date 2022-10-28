@@ -1,4 +1,5 @@
 use rand::Rng;
+use std::time::Instant;
 
 pub struct Tile {
     pub is_mine: bool,
@@ -15,6 +16,9 @@ pub struct Board {
     flags: u8,
     pub score: u8,
     pub pure_random: bool,
+
+    pub start_time: Instant,
+    pub end_time: Instant,
 }
 
 impl Board {
@@ -32,7 +36,6 @@ impl Board {
             }
             tiles.push(row);
         }
-
         let mut board = Board {
             tiles,
             width: width as u8,
@@ -40,6 +43,8 @@ impl Board {
             mines: mines as u8,
             flags: 0,
             score: 0,
+            start_time: Instant::now(),
+            end_time: Instant::now(),
             pure_random,
         };
 
@@ -137,7 +142,6 @@ impl Board {
         }
     }
 
-    pub fn print_board(&self) {}
 
     pub fn select_tile(&mut self, x: usize, y: usize) -> bool {
         let tile = &mut self.tiles[y][x];
@@ -169,11 +173,17 @@ impl Board {
                     }
 
                     if self.select_tile(x as usize, y as usize) {
-                        println!("Mine found at {}, {}", x, y);
+                        //println!("Mine found at {}, {}", x, y);
+                    } else {
+                        //println!("No mine found at {}, {}", x, y);
+                        score += 1;
                     }
                 }
             }
         }
+
+        // increase the score by 1
+        self.score += 1;
         false
     }
 
@@ -196,7 +206,8 @@ impl Board {
         }
     }
 
-    pub fn is_win(&self) -> bool {
+    pub fn is_win(&mut self) -> bool {
+        self.on_game_end();
         for y in 0..self.height {
             for x in 0..self.width {
                 let tile = &self.tiles[y as usize][x as usize];
@@ -208,14 +219,21 @@ impl Board {
         true
     }
 
+    pub fn on_game_end(&mut self) {
+        if (self.end_time - self.start_time).as_secs() == 0 {
+            self.end_time = Instant::now();
+        }
+    }
+
     pub fn on_lost(&mut self) {
+        self.on_game_end();
         for y in 0..self.height {
             for x in 0..self.width {
                 let tile = &mut self.tiles[y as usize][x as usize];
                 if tile.is_mine {
                     tile.is_revealed = true;
-                    if (tile.is_flagged) {
-                        self.score += 1;
+                    if tile.is_flagged {
+                        self.score += 10;
                     }
                 }
             }
