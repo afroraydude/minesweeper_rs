@@ -75,11 +75,18 @@ pub struct Minesweeper {
   window_size: Vec2,
   pub texture_db: texturedb::TextureDatabase,
   initial_load: bool,
+    pub pure_random: bool,
+}
+
+impl Minesweeper {
+    pub(crate) fn update_pure_random(&mut self) {
+        self.pure_random = !self.pure_random;
+    }
 }
 
 impl Minesweeper {
   pub fn new_board(&mut self, width: usize, height: usize, mines: usize) {
-      self.board = Board::new(width, height, mines);
+      self.board = Board::new(width, height, mines, self.pure_random);
       self.is_game_over = false;
       self.is_game_won = false;
       self.game_started = true;
@@ -109,7 +116,7 @@ impl Default for Minesweeper {
   fn default() -> Self {
       let mut texture = texturedb::TextureDatabase::default();
       Self {
-          board: Board::new(10, 10, 10),
+          board: Board::new(10, 10, 10, false),
           is_game_over: false,
           is_game_won: false,
           game_started: false,
@@ -117,6 +124,7 @@ impl Default for Minesweeper {
           window_size: Vec2::new(300.0, 300.0),
           texture_db: texture,
           initial_load: false,
+          pure_random: false,
       }
   }
 }
@@ -224,6 +232,7 @@ impl eframe::App for Minesweeper {
 
               ui.label("Welcome to Minesweeper!");
               ui.label("Select a difficulty to begin.");
+              ui.checkbox(&mut self.pure_random, "Pure Random");
               ui.horizontal(|ui| {
                   let b1 = ui.add(egui::Button::new("Easy"));
                   let b2 = ui.add(egui::Button::new("Medium"));
