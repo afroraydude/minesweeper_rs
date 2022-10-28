@@ -116,7 +116,7 @@ impl Default for Minesweeper {
   fn default() -> Self {
       let mut texture = texturedb::TextureDatabase::default();
       Self {
-          board: Board::new(10, 10, 10, false),
+          board: Board::default(),
           is_game_over: false,
           is_game_won: false,
           game_started: false,

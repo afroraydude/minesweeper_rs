@@ -91,12 +91,11 @@ impl Board {
             let likelihood = (mines_in_surrounding_tiles as f32 / tiles_in_surrounding_tiles as f32) * 100.0;
 
             if rng.gen_range(0..100) > likelihood as u8 {
-                println!("skipping tile (likelihood is {})", likelihood);
                 continue;
             }
 
             // place a mine in this tile
-            println!("Placing mine at {}, {} (likelihood: {})", x, y, likelihood);
+            //println!("Placing mine at {}, {} (likelihood: {})", x, y, likelihood);
             self.tiles[y as usize][x as usize].is_mine = true;
             mines_placed += 1;
         }
@@ -176,7 +175,6 @@ impl Board {
                         //println!("Mine found at {}, {}", x, y);
                     } else {
                         //println!("No mine found at {}, {}", x, y);
-                        score += 1;
                     }
                 }
             }
@@ -239,7 +237,7 @@ impl Board {
             }
         }
 
-        self.print_board();
+        //self.print_board();
     }
 
     pub fn get_mines(&self) -> u8 {
@@ -260,5 +258,11 @@ impl Board {
 
     pub fn get_tile(&mut self, x: usize, y: usize) -> &Tile {
         &self.tiles[y][x]
+    }
+}
+
+impl Default for Board {
+    fn default() -> Self {
+        Self::new(0, 0, 0, true)
     }
 }
